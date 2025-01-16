@@ -1,32 +1,33 @@
-pipeline{
+pipeline {
     agent any
-    tools{
-        maven 'MAVEN_HOME'
+    tools {
+        maven 'MAVEN_HOME' 
     }
-    stages{
-        stage('git repo & clean'){
-            steps{
-                
-                bat 'git clone https://github.com/Viishhnur/SampleMavenJavaProject.git'
-                bat 'mvn clean -f SampleMavenJavaProject'
+    stages {
+        stage('Git Checkout & Clean Workspace') {
+            steps {
+                bat '''
+                    if exist "MyMavenProj" (
+                        rmdir /s /q "MyMavenProj"
+                    )
+                '''
+                bat "git clone https://github.com/SaiGargey/MyMavenProj.git"
+                bat "mvn clean -f MyMavenProj/pom.xml"
             }
         }
-        stage('install'){
-            steps{
-                
-                bat 'mvn install -f SampleMavenJavaProject'
+        stage('Install Dependencies') {
+            steps {
+                bat "mvn install -f MyMavenProj/pom.xml"
             }
         }
-        stage('test'){
-            steps{
-                
-                bat 'mvn test -f SampleMavenJavaProject'
+        stage('Run Tests') {
+            steps {
+                bat "mvn test -f MyMavenProj/pom.xml"
             }
         }
-        stage('pacakge'){
-            steps{
-                
-                bat 'mvn package -f SampleMavenJavaProject'
+        stage('Package Application') {
+            steps {
+                bat "mvn package -f MyMavenProj/pom.xml"
             }
         }
     }
